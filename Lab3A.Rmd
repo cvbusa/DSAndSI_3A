@@ -5,7 +5,9 @@ date: "Sunday, March 29, 2015"
 output:
   pdf_document:
     fig_caption: yes
+    highlight: tango
     keep_tex: yes
+    number_sections: yes
     toc: yes
   html_document:
     fig_caption: yes
@@ -13,10 +15,9 @@ output:
     toc: yes
 ---
 
-```{r DisableSciNotation}
+```{r DisableSciNotationm, echo=FALSE}
 options(scipen=999)
 ```
-
 
 ### Load Data
 ```{r LoadData}
@@ -27,11 +28,13 @@ load(file = url("http://www.openintro.org/stat/data/ames.RData"))
 
 ### Exploratory Stats
 ```{r ExploreData}
-names(ames)
+sort(names(ames))
 #
 area <- ames$Gr.Liv.Area
 (xsum <-summary(area))
 hist(x = area, xlab = "Area in Sq. Feet", breaks = 100)
+text(4000, 120, paste("Mean =", round(mean(area), 1), "\n Median =", 
+         round(median(area), 1), "\n Std.Dev =", round(sd(area), 1)))
 
 ```
 
@@ -48,7 +51,7 @@ __Question 1 Answer: B)__
 
 ***
 
-### The unknown sampling distribution.
+### The Unknown Sampling Distribution.
 
 ```{r SamplingDist}
 samp0 <-sample(area,50)
@@ -86,9 +89,11 @@ for(i in 1:5000){
    sample_means50[i] <- mean(samp)
    }
 
-hist(sample_means50)
+(xsum <-summary(sample_means50))
 
 hist(sample_means50, breaks = 50)
+text(1725, 250, paste("Mean =", round(mean(sample_means50), 1), "\n Median =", 
+         round(median(sample_means50), 1), "\n Std.Dev =", round(sd(sample_means50), 1)))
 
 summary(sample_means50)
 ```
@@ -112,8 +117,10 @@ for (i in 1: 100)
     
 }
 
-hist(sample_means_small, breaks = 25)
 sample_means_small
+hist(sample_means_small, breaks = 25)
+text(1650, 7, paste("Mean =", round(mean(sample_means_small), 1), "\n Median =", 
+         round(median(sample_means_small), 1), "\n Std.Dev =", round(sd(sample_means_small), 1)))
 ```
 
 #### Question 3: How many elements are there in this object called sample_means_small? 
@@ -135,6 +142,7 @@ C) Each element represents the true population mean of square footage of houses.
 
 __Question 4 Answer: Each element of this sampling distribution vector is a mean of a random sample (size 50) from the population.__
 
+***
 
 ### Sample size and the sampling distribution
 
@@ -152,17 +160,17 @@ for(i in 1:5000){
 }
 ```
 
-
 To see the effect that different sample sizes have on the sampling distribution, plot the three distributions on top of one another.
 
 ```{r PloSampleSizeText}
 par(mfrow = c(3, 1))
-
 xlimits = range(sample_means10)
-
 hist(sample_means10, breaks = 20, xlim = xlimits)
+text(1850, 500, paste("Std.Dev =", round(sd(sample_means10), 1)))
 hist(sample_means50, breaks = 20, xlim = xlimits)
+text(1850, 500, paste("Std.Dev =", round(sd(sample_means50), 1)))
 hist(sample_means100, breaks = 20, xlim = xlimits)
+text(1850, 500, paste("Std.Dev =", round(sd(sample_means100), 1)))
 ```
 
 #### Question 5: It makes intuitive sense that as the sample size increases, the center of the sampling distribution becomes a more reliable estimate for the true population mean. Also as the sample size increases, the variability of the sampling distribution ________. 
@@ -173,6 +181,7 @@ C) stays the same
 
 __Answer Question 5: The panel plot shows that the variability decreases as the sample size increases.__
 
+***
 
 ### Now you’ll try to estimate the mean home price.
 
@@ -182,7 +191,7 @@ __Answer Question 5: The panel plot shows that the variability decreases as the 
 price <- ames$SalePrice
 samp <-sample(price,50)
 (xsum <-summary(samp))
-hist(samp/(1000), xlab = "Price in $Thousands", breaks = 50)
+hist(samp, xlab = "Price", breaks = 50)
 ```
 
 __Exercise Answer: The point estimate of the mean is `r xsum["Mean"]/1000`K.__
@@ -200,11 +209,11 @@ for (i in 1:5000)
 }
 
 hist(sample_means50, breaks = 50)
-(xsum <-summary(sample_means50))
+(xsum50 <-summary(sample_means50))
 
 ```
 
-__Exercise Answer: The shape of the price sampling distribution is normal because the median home price of `r xsum["Median"]/1000`K is approximately the same as the mean home price of `r xsum["Mean"]/1000`K.__
+__Exercise Answer: The shape of the price sampling distribution is normal because the median home price of `r xsum50["Median"]/1000`K is approximately the same as the mean home price of `r xsum50["Mean"]/1000`K.__
 
 
 #### Exercise: Change your sample size from 50 to 150, then compute the sampling distribution using the same method as above, and store these means in a new vector called sample_means150. Describe the shape of this sampling distribution, and compare it to the sampling distribution for a sample size of 50. Based on this sampling distribution, what would you guess to be the mean sale price of homes in Ames?
@@ -222,22 +231,22 @@ hist(sample_means150, breaks = 50)
 (xsum150 <-summary(sample_means150))
 
 par(mfrow = c(2,1))
-
 xlimits50 <-range(sample_means50)
-
 hist(sample_means50, breaks = 50, xlim = xlimits50)
+text(210000, 200, paste("Std.Dev =", round(sd(sample_means50), 1)))
 hist(sample_means150, breaks = 50, xlim = xlimits50)
+text(210000, 200, paste("Std.Dev =", round(sd(sample_means150), 1)))
 
-```
-
-* Sample Size 150 Summary:
-```{r summarySampleSize150Price, echo=FALSE}
-xsum150
 ```
 
 * Sample Size 50 Summary:
-```{r SummarySampleSizeOf50Price, echo=FALSE}
-xsum
+```{r summarySampleSize50Price, echo=FALSE}
+xsum50
+```
+
+* Sample Size 150 Summary:
+```{r SummarySampleSize150Price, echo=FALSE}
+xsum150
 ```
 
 __Exercise Answer: Both sampling distributions have a near normal shape. The estimated mean price of homes in Ames is $`r mean(c(xsum["Mean"],xsum150["Mean"]))`.__
@@ -250,7 +259,7 @@ B) The means for the two sampling distribtuions are roughly similar.
 C) Both sampling distributions are symmetric. 
 
 
-__Question 6 Answer: A is false. Sample sizes of 150 typically have a smaller spread (`r xsum150["Max."] -xsum150["Min."]`) than sample sizes of 50 (`r xsum["Max."] -xsum["Min."]`).__
+__Question 6 Answer: A is false. Sample sizes of 150 typically have a smaller sampling distribution spread (`r xsum150["Max."] -xsum150["Min."]`) than sample sizes of 50 (`r xsum["Max."] -xsum["Min."]`).__
 
 ***
 
